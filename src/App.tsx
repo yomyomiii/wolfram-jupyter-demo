@@ -485,34 +485,64 @@ export default function App() {
         {(() => {
           const kernelVersion = { wl: "14.0", py: "3.12", jl: "1.10" }[kernel.id] || "—";
           const packages = kernel.id === "wl"
-            ? [{ name: "QuantumFramework", version: "1.4.0" }, { name: "GeneralUtilities", version: "1.0.4" }]
+            ? [{ name: "QuantumFramework", version: "1.4.0", tag: "Quantum" }, { name: "GeneralUtilities", version: "1.0.4", tag: "Core" }]
             : kernel.id === "py"
-              ? [{ name: "qiskit", version: "1.0.2" }, { name: "numpy", version: "1.26.4" }]
-              : [{ name: "Yao", version: "0.8.10" }];
+              ? [{ name: "qiskit", version: "1.0.2", tag: "Quantum" }, { name: "numpy", version: "1.26.4", tag: "Math" }]
+              : [{ name: "Yao.jl", version: "0.8.10", tag: "Quantum" }];
           return (
-            <aside className="border-l shrink-0 flex flex-col" style={{ ...tb, width: 200, background: "#fafafa" }}>
-              <div className="px-2 py-1.5 text-xs font-semibold tracking-wide border-b" style={{ ...tb, color: "#5a5a5a" }}>버전</div>
-              <div className="flex items-center gap-1.5 px-2 py-1 text-xs text-gray-700">
-                <KIcon size={13} style={{ color: kernel.color }} />
-                <span>{kernel.name}</span>
-                <span className="ml-auto text-gray-400">{kernelVersion}</span>
-              </div>
+            <aside className="border-l shrink-0 flex flex-col gap-2 p-2.5 overflow-y-auto"
+              style={{ ...tb, width: 224, background: "linear-gradient(180deg, #fafbfc 0%, #f4f5f7 100%)" }}>
 
-              <div className="px-2 py-1.5 text-xs font-semibold tracking-wide border-b border-t" style={{ ...tb, color: "#5a5a5a" }}>패키지</div>
-              {packages.map((p) => (
-                <div key={p.name} className="flex items-center gap-1.5 px-2 py-1 text-xs text-gray-700">
-                  <span style={{ color: "#f57c00" }}>◆</span>
-                  <span className="truncate">{p.name}</span>
-                  <span className="ml-auto text-gray-400">{p.version}</span>
+              <div className="rounded-md border bg-white p-2.5 shadow-sm" style={tb}>
+                <div className="flex items-center gap-1 mb-2 text-[10px] uppercase tracking-wider text-gray-400 font-semibold">
+                  <Atom size={11} /><span>Kernel</span>
                 </div>
-              ))}
-
-              <div className="px-2 py-1.5 text-xs font-semibold tracking-wide border-b border-t" style={{ ...tb, color: "#5a5a5a" }}>상태</div>
-              <div className="flex items-center gap-1.5 px-2 py-1 text-xs text-gray-700">
-                <Circle size={9} style={{ color: busy ? "#fb8c00" : "#43a047", fill: busy ? "#fb8c00" : "#43a047" }} />
-                <span>{busy ? "실행 중" : "준비됨"}</span>
-                <span className="ml-auto text-gray-400">셀 {cells.length}</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-md flex items-center justify-center shrink-0"
+                    style={{ background: `${kernel.color}1a` }}>
+                    <KIcon size={17} style={{ color: kernel.color }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-medium text-gray-800 truncate leading-tight">{kernel.name}</div>
+                    <div className="text-[11px] text-gray-500 mt-0.5">v{kernelVersion}</div>
+                  </div>
+                </div>
               </div>
+
+              <div className="rounded-md border bg-white p-2.5 shadow-sm" style={tb}>
+                <div className="flex items-center justify-between mb-2 text-[10px] uppercase tracking-wider text-gray-400 font-semibold">
+                  <span className="flex items-center gap-1"><FileCode size={11} /><span>Packages</span></span>
+                  <span className="px-1.5 py-0.5 rounded-full text-[9px] tabular-nums" style={{ background: "#eef1f5", color: "#5a6470" }}>{packages.length}</span>
+                </div>
+                <div className="space-y-0.5">
+                  {packages.map((p) => (
+                    <div key={p.name} className="group flex items-center gap-1.5 px-1.5 py-1 rounded hover:bg-blue-50 transition-colors cursor-default">
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#f57c00" }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[12px] text-gray-800 truncate leading-tight">{p.name}</div>
+                        <div className="text-[10px] text-gray-400 leading-tight mt-0.5">{p.tag} · v{p.version}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-md border bg-white p-2.5 shadow-sm" style={tb}>
+                <div className="flex items-center gap-1 mb-2 text-[10px] uppercase tracking-wider text-gray-400 font-semibold">
+                  <Circle size={11} /><span>Status</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="relative flex w-2.5 h-2.5 items-center justify-center">
+                    {busy && <span className="absolute inset-0 rounded-full animate-ping" style={{ background: "#fb8c00", opacity: 0.5 }} />}
+                    <span className="relative w-2 h-2 rounded-full" style={{ background: busy ? "#fb8c00" : "#43a047" }} />
+                  </span>
+                  <span className="text-[12px] font-medium" style={{ color: busy ? "#e65100" : "#2e7d32" }}>
+                    {busy ? "실행 중" : "준비됨"}
+                  </span>
+                  <span className="ml-auto text-[11px] text-gray-400 tabular-nums">셀 {cells.length}</span>
+                </div>
+              </div>
+
             </aside>
           );
         })()}

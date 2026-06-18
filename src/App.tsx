@@ -454,7 +454,7 @@ export default function App() {
             <button onClick={openDialog} className="flex items-center gap-1.5 px-3 text-xs hover:bg-gray-100 h-full" title="커널 변경">
               <KIcon size={14} style={{ color: kernel.color }} />
               <span className="text-gray-700">{kernel.name}</span>
-              <Circle size={9} style={{ color: busy ? "#fb8c00" : "#43a047", fill: busy ? "#fb8c00" : "#43a047" }} />
+              <Circle size={9} style={{ color: busy ? "#fb8c00" : "#9e9e9e", fill: busy ? "#fb8c00" : "transparent" }} />
             </button>
           </div>
 

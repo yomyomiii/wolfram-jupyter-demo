@@ -481,6 +481,41 @@ export default function App() {
             <span className="ml-auto">{kernel.name} | 셀 {cells.length}개</span>
           </div>
         </div>
+
+        {(() => {
+          const isQuantum = kernel.id === "wl";
+          const doneCells = cells.filter((c) => c.status === "done" && c.output);
+          const qCells = isQuantum ? doneCells.length : 0;
+          const shotsPerJob = 1024;
+          const totalShots = qCells * shotsPerJob;
+          const qpuMs = qCells * 440;
+          const creditLimit = 1000;
+          const creditUsed = Math.min(creditLimit, totalShots * 0.01);
+          const creditPct = (creditUsed / creditLimit) * 100;
+          return (
+            <aside className="border-l shrink-0 flex flex-col text-xs" style={{ ...tb, width: 210, background: "#fafafa", color: "#3c3c3c" }}>
+              <div className="px-3 py-1.5 font-semibold border-b tracking-wide" style={{ ...tb, color: "#5a5a5a" }}>모니터</div>
+              <div className="px-3 py-2 border-b" style={tb}>
+                <div className="text-[10px] uppercase text-gray-400 mb-1">Kernel</div>
+                <div className="flex items-center gap-1.5 mb-1"><KIcon size={13} style={{ color: kernel.color }} /><span className="text-gray-800">{kernel.name}</span></div>
+                <div className="text-gray-500 leading-relaxed">QuantumFramework v1.4.0<br/>Qubits: {isQuantum ? 3 : "—"}<br/>Status: <span style={{ color: busy ? "#fb8c00" : "#388e3c" }}>{busy ? "● Running" : "● Ready"}</span></div>
+              </div>
+              <div className="px-3 py-2 border-b" style={tb}>
+                <div className="text-[10px] uppercase text-gray-400 mb-1">QPU Usage</div>
+                <div className="flex justify-between text-gray-600"><span>실행 시간</span><span className="tabular-nums">{(qpuMs / 1000).toFixed(2)}s</span></div>
+                <div className="flex justify-between text-gray-600"><span>총 샷</span><span className="tabular-nums">{totalShots.toLocaleString()}</span></div>
+                <div className="flex justify-between text-gray-600"><span>실행 잡</span><span className="tabular-nums">{qCells}</span></div>
+              </div>
+              <div className="px-3 py-2">
+                <div className="flex justify-between text-[10px] uppercase text-gray-400 mb-1"><span>Credits</span><span className="tabular-nums">{creditUsed.toFixed(1)} / {creditLimit}</span></div>
+                <div className="w-full h-2 rounded overflow-hidden" style={{ background: "#e0e0e0" }}>
+                  <div style={{ width: `${creditPct}%`, height: "100%", background: creditPct > 80 ? "#e53935" : creditPct > 50 ? "#fb8c00" : "#43a047", transition: "width 0.3s" }} />
+                </div>
+                <div className="mt-1 text-gray-400 text-[10px]">잔여 {(creditLimit - creditUsed).toFixed(1)} credits</div>
+              </div>
+            </aside>
+          );
+        })()}
       </div>
 
       {dialog && (
